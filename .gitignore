@@ -1,0 +1,11 @@
+# Ignored Files
+
+# virtual environment
+
+venv/
+venv
+env/
+
+# Environmental Variables
+backend/.env/
+backend/.env
