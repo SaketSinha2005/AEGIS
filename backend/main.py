@@ -105,35 +105,21 @@ workflow.add_conditional_edges(
 
 graph = workflow.compile()
 
-@app.post("/api/v1/generate", response_model=GenerationResponse)
-async def generate_problem_solution(request: ProblemRequest):
+def generate_code(problem: str):
     initial_state: GraphState = {
-        "problem_statement": request.problem,
+        "problem_statement": problem,
         "generated_code": None,
         "error_message": None,
         "iterations": 0
     }
-    
-    try:
-        final_state = graph.invoke(initial_state)
-        
-        if final_state.get("error_message"):
-            raise HTTPException(
-                status_code=422, 
-                detail=f"AI failed to generate syntactically valid code: {final_state['error_message']}"
-            )
-            
-        return GenerationResponse(
-            code=final_state["generated_code"],
-            iterations=final_state["iterations"],
-            status="success"
-        )
-        
-    except Exception as e:
-        if isinstance(e, HTTPException):
-            raise e
-        raise HTTPException(status_code=500, detail=str(e))
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    final_state = graph.invoke(initial_state)
+
+    if final_state.get("error_message"):
+        raise Exception(
+            f"AI failed to generate syntactically valid code: "
+            f"{final_state['error_message']}"
+        )
+
+    return final_state
+
