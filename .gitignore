@@ -9,3 +9,7 @@ env/
 # Environmental Variables
 backend/.env/
 backend/.env
+
+# cache files
+
+backend/__pycache__/
