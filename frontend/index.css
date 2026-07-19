@@ -1,51 +1,36 @@
-/* Custom glow effects and scrollbar styling for the dark IDE aesthetic */
-.glow-btn {
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-    transition: all 0.3s ease;
-}
-.glow-btn:hover {
-    box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
-    border-color: rgba(99, 102, 241, 0.8);
+body {
+    background-color: theme('colors.background');
+    color: theme('colors.on-background');
 }
 
-::-webkit-scrollbar {
+.glass-panel {
+    background: rgba(32, 31, 34, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid theme('colors.outline-variant');
+}
+
+.glow-effect {
+    box-shadow: 0 0 20px rgba(192, 193, 255, 0.15);
+}
+
+.glow-effect:hover {
+    box-shadow: 0 0 30px rgba(192, 193, 255, 0.3);
+}
+
+.code-block-glow::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(135deg, theme('colors.primary') 0%, transparent 100%);
+    z-index: -1;
+    opacity: 0.3;
+    border-radius: inherit;
+}
+
+.terminal-dot {
     width: 8px;
     height: 8px;
-}
-::-webkit-scrollbar-track {
-    background: #131315; 
-}
-::-webkit-scrollbar-thumb {
-    background: #353437; 
-    border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: #464554; 
-}
-
-/* Syntax Highlighting Base (One Dark Inspired) */
-.sh-keyword { color: #c678dd; } /* purple */
-.sh-function { color: #61afef; } /* blue */
-.sh-string { color: #98c379; } /* green */
-.sh-number { color: #d19a66; } /* orange */
-.sh-comment { color: #5c6370; font-style: italic; } /* grey */
-.sh-variable { color: #e06c75; } /* red */
-
-/* Terminal Blinking Cursor */
-.cursor-blink {
-    animation: blink 1s step-end infinite;
-}
-@keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-}
-
-.progress-bar-stripes {
-    background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
-    background-size: 1rem 1rem;
-    animation: progress-stripes 1s linear infinite;
-}
-@keyframes progress-stripes {
-    from { background-position: 1rem 0; }
-    to { background-position: 0 0; }
+    border-radius: 50%;
+    display: inline-block;
+    background-color: theme('colors.outline-variant');
 }
