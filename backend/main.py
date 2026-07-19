@@ -5,6 +5,7 @@ from pydantic import BaseModel
 import tempfile
 from pathlib import Path
 import subprocess
+import uuid
 
 app = FastAPI(title="Code Executor")
 
@@ -40,22 +41,33 @@ def execute(request: ExecuteRequest):
             solution_path = Path(tmpdir) / "solution.py"
             solution_path.write_text(code)
 
+            container_name = f"sandbox-{uuid.uuid4().hex[:12]}"
 
-            process = subprocess.run(
-                [
-                    "docker",
-                    "run",
-                    "--rm",
-                    "--network", "none",
-                    "--cpus", "0.5",
-                    "--memory", "256m",
-                    "-v", f"{tmpdir}:/home/sandboxuser",
-                    "img-backend"
-                ],
-                capture_output=True,
-                text=True,
-                timeout=15
-            )
+            try:
+                process = subprocess.run(
+                    [
+                        "docker",
+                        "run",
+                        "--rm",
+                        "--name", container_name,
+                        "--network", "none",
+                        "--cpus", "0.5",
+                        "--memory", "256m",
+                        "-v", f"{tmpdir}:/home/sandboxuser",
+                        "img-backend"
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=15,
+                    stdin=subprocess.DEVNULL, 
+                )
+
+            except subprocess.TimeoutExpired:
+                subprocess.run(
+                    ["docker", "kill", container_name],
+                    capture_output=True, timeout=5
+                )
+                raise HTTPException(status_code=408, detail="Execution timed out.")
 
             return ExecuteResponse(
                 generated_code=code,
