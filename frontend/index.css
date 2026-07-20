@@ -34,3 +34,27 @@ body {
     display: inline-block;
     background-color: theme('colors.outline-variant');
 }
+
+/* Auth Modal Styles */
+.glow-button {
+    box-shadow: 0 0 20px rgba(128, 131, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.glow-button:hover {
+    box-shadow: 0 0 30px rgba(128, 131, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+.input-focus-ring:focus {
+    outline: none;
+    border-color: #c0c1ff;
+    box-shadow: 0 0 0 2px rgba(192, 193, 255, 0.1);
+}
+
+.terminal-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
