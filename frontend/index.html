@@ -10,7 +10,7 @@
 
 <!-- External JS and CSS -->
 <script src="tailwind-config.js"></script>
-<link rel="stylesheet" href="code.css">
+<link rel="stylesheet" href="index.css">
 </head>
 <body class="font-body-md text-body-md antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container bg-background text-on-background">
 <!-- TopNavBar -->
@@ -23,7 +23,7 @@
 </div>
 </div>
 <div class="flex items-center gap-gutter">
-<button class="text-on-surface-variant hover:text-on-surface px-4 py-2 rounded text-label-caps font-label-caps hover:bg-surface-container-highest transition-colors duration-200">
+<button id="login-btn" onclick="openAuthModal('login')" class="text-on-surface-variant hover:text-on-surface px-4 py-2 rounded text-label-caps font-label-caps hover:bg-surface-container-highest transition-colors duration-200">
     Login
 </button>
 <button class="bg-primary text-on-primary hover:bg-primary-fixed-dim px-4 py-2 rounded text-label-caps font-label-caps transition-transform duration-150 active:scale-95 ml-2">Upgrade to Pro</button>
@@ -162,5 +162,145 @@
 <a class="hover:text-primary dark:hover:text-primary underline" href="#">Status</a>
 </div>
 </footer>
+<!-- Auth Modal Overlay (Login / Sign Up) -->
+<div class="hidden fixed inset-0 z-[100] items-center justify-center p-margin bg-surface-container-lowest/60 backdrop-blur-md" id="auth-modal-overlay">
+<!-- Modal Container -->
+<div class="glass-panel w-full max-w-[600px] rounded-xl overflow-hidden">
+<!-- Terminal Header Decor -->
+<div class="h-12 border-b border-outline-variant/20 px-5 flex items-center justify-between bg-surface-container-low/50">
+<div class="terminal-dots flex gap-2">
+<span class="bg-outline-variant/50"></span>
+<span class="bg-outline-variant/50"></span>
+<span class="bg-outline-variant/50"></span>
+</div>
+<div class="text-label-caps font-label-caps text-on-surface-variant opacity-60">AUTH_GATEWAY_V2</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors" onclick="closeAuthModal()">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Content Area -->
+<div class="p-10 flex flex-col gap-9">
+<!-- Branding & State Toggle -->
+<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-2 text-center">
+<div class="font-headline-md text-headline-md font-bold tracking-tight text-primary">AetherExec</div>
+<p class="text-body-md font-body-md text-on-surface-variant">Initialize your secure runtime environment.</p>
+</div>
+<!-- Tabs -->
+<div class="bg-surface-container-high rounded-full p-1 flex relative">
+<button class="relative z-10 flex-1 py-2.5 text-label-caps font-label-caps transition-colors duration-300 text-on-surface" id="tab-login" onclick="switchAuthState('login')">LOGIN</button>
+<button class="relative z-10 flex-1 py-2.5 text-label-caps font-label-caps transition-colors duration-300 text-on-surface-variant" id="tab-signup" onclick="switchAuthState('signup')">SIGN UP</button>
+<div class="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-surface-container-highest rounded-full transition-all duration-300 ease-out" id="tab-indicator"></div>
+</div>
+</div>
+<!-- Form -->
+<form class="flex flex-col gap-stack-md" onsubmit="return false;">
+<div class="flex-col gap-1.5" id="fullname-wrapper" style="display:none;">
+<label class="text-label-caps font-label-caps text-on-surface-variant ml-1" for="fullname">CORE_IDENTITY / FULL NAME</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg px-5 py-3.5 text-body-lg font-body-md text-on-surface placeholder:text-outline/40 input-focus-ring transition-all" id="fullname" placeholder="Enter your full name" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-label-caps font-label-caps text-on-surface-variant ml-1" for="auth-email">IDENTITY / EMAIL</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg px-5 py-3.5 text-body-lg font-body-md text-on-surface placeholder:text-outline/40 input-focus-ring transition-all" id="auth-email" placeholder="dev@aetherexec.io" type="email"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center ml-1">
+<label class="text-label-caps font-label-caps text-on-surface-variant" for="auth-password">KEYPHRASE / PASSWORD</label>
+<a class="text-[10px] font-label-caps text-primary hover:underline" href="#" id="forgot-link">RECOVER KEY?</a>
+</div>
+<div class="relative group">
+<input class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg px-5 py-3.5 text-body-lg font-body-md text-on-surface placeholder:text-outline/40 input-focus-ring transition-all" id="auth-password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<!-- Terms (Visible only on Sign Up) -->
+<div class="hidden flex gap-3 px-1" id="signup-terms">
+<input class="mt-1 rounded border-outline-variant/30 bg-surface-container text-primary focus:ring-primary/20" id="terms" type="checkbox"/>
+<label class="text-[12px] text-on-surface-variant font-body-md leading-tight" for="terms">
+                            I agree to the <span class="text-primary hover:underline cursor-pointer">Service Protocols</span> and <span class="text-primary hover:underline cursor-pointer">Security Whitepaper</span>.
+                        </label>
+</div>
+<!-- Action Button -->
+<button class="mt-4 glow-button bg-primary-container text-on-primary-container py-4 rounded-lg text-label-caps font-label-caps tracking-widest hover:bg-primary transition-colors flex items-center justify-center gap-2 group" id="primary-action">
+<span id="auth-btn-text">INITIALIZE_SESSION</span>
+<span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</form>
+<!-- Footer Text -->
+<div class="flex flex-col items-center gap-1">
+<p class="text-[11px] font-code-sm text-on-surface-variant opacity-60" id="toggle-hint">
+                        SECURE_TLS_CONNECTION_ACTIVE
+                    </p>
+<div class="h-1 w-8 bg-outline-variant/20 rounded-full mt-4"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Auth Modal Control Script -->
+<script>
+    function openAuthModal(state) {
+        const overlay = document.getElementById('auth-modal-overlay');
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+        document.body.classList.add('overflow-hidden');
+        switchAuthState(state || 'login');
+    }
+
+    function closeAuthModal() {
+        const overlay = document.getElementById('auth-modal-overlay');
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    function switchAuthState(state) {
+        const indicator = document.getElementById('tab-indicator');
+        const tabLogin = document.getElementById('tab-login');
+        const tabSignup = document.getElementById('tab-signup');
+        const signupTerms = document.getElementById('signup-terms');
+        const fullnameWrapper = document.getElementById('fullname-wrapper');
+        const btnText = document.getElementById('auth-btn-text');
+        const forgotLink = document.getElementById('forgot-link');
+
+        if (state === 'signup') {
+            indicator.style.transform = 'translateX(100%)';
+            tabSignup.classList.add('text-on-surface');
+            tabSignup.classList.remove('text-on-surface-variant');
+            tabLogin.classList.remove('text-on-surface');
+            tabLogin.classList.add('text-on-surface-variant');
+
+            signupTerms.classList.remove('hidden');
+            fullnameWrapper.style.display = 'flex';
+            forgotLink.classList.add('invisible');
+            btnText.innerText = 'CREATE_CORE_ID';
+        } else {
+            indicator.style.transform = 'translateX(0%)';
+            tabLogin.classList.add('text-on-surface');
+            tabLogin.classList.remove('text-on-surface-variant');
+            tabSignup.classList.remove('text-on-surface');
+            tabSignup.classList.add('text-on-surface-variant');
+
+            signupTerms.classList.add('hidden');
+            fullnameWrapper.style.display = 'none';
+            forgotLink.classList.remove('invisible');
+            btnText.innerText = 'INITIALIZE_SESSION';
+        }
+    }
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeAuthModal();
+        }
+    });
+
+    // Close when clicking the backdrop (not the panel itself)
+    document.getElementById('auth-modal-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'auth-modal-overlay') closeAuthModal();
+    });
+</script>
 </body>
 </html>
