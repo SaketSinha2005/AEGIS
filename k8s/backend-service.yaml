@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: aegis-backend
+  namespace: aegis-system
+
+spec:
+  selector:
+    app: aegis-backend
+
+  ports:
+    - port: 8000
+      targetPort: 8000
+
+  type: NodePort
