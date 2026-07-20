@@ -9,6 +9,7 @@ env/
 # Environmental Variables
 backend/.env/
 backend/.env
+k8s/backend-secret.yaml
 
 # cache files
 
