@@ -1,8 +1,13 @@
 FROM python:3.12-slim
 
-RUN useradd -m sandboxuser
-USER sandboxuser
+WORKDIR /app
 
-WORKDIR /home/sandboxuser
+COPY requirements.txt .
 
-CMD ["python", "solution.py"]
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
